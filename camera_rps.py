@@ -67,9 +67,9 @@ class RockPaperScissors:
             while True:
 
                 if max(self.computer_wins, self.user_wins) >= self.num_rounds:
-                    self.display_text("GAME OVER!", (50, 100))
-                    self.display_text(f"You: {self.user_wins}", (50, 150))
-                    self.display_text(f"Computer: {self.computer_wins}", (50, 200))
+                    self.display_text("GAME OVER!", (50, 250))
+                    self.display_text(f"You: {self.user_wins}", (50, 300))
+                    self.display_text(f"Computer: {self.computer_wins}", (50, 350))
 
                 else:
 
