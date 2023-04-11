@@ -6,20 +6,11 @@ import random
 import time
 
 
-class RockPaperScissors:
+class KerasModel:
 
-    def __init__(self, num_rounds=3, labels_file="labels.txt", model_file="keras_model.h5"):
-        self.model = None
-        self.cap = None
-        self.data = None
+    def __init__(self, labels_file="labels.txt", model_file="keras_model.h5"):
         self.tags = self.read_model_labels(labels_file)
-        self.set_up(model_file)
-        self.computer_choice = None
-        self.user_choice = None
-        self.frame = None
-        self.user_wins = 0
-        self.computer_wins = 0
-        self.num_rounds = num_rounds
+        self.model = load_model(model_file)
 
     @staticmethod
     def read_model_labels(labels_file):
@@ -31,25 +22,46 @@ class RockPaperScissors:
             print('Error loading model labels')
             print(err.__class__.__name__, err)
 
-    def set_up(self, model_file):
-        try:
-            self.model = load_model(model_file)
-            self.cap = cv2.VideoCapture(0)
-            self.data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-        except Exception as err:
-            print('Error loading model')
-            print(err.__class__.__name__, err)
+    def predict(self, normalized_image, image_dimensions):
+        data = np.ndarray(shape=(1, *image_dimensions, 3), dtype=np.float32)
+        data[0] = normalized_image
+        prediction = self.model.predict(data)
+        return prediction
+
+    def classify(self, prediction):
+        return self.tags[np.argmax(prediction)]
+
+
+class RockPaperScissors:
+
+    def __init__(self, num_rounds=3, labels_file="labels.txt", model_file="keras_model.h5"):
+        self.model = KerasModel(labels_file, model_file)
+        self.tags = self.model.tags
+        self.cap = cv2.VideoCapture(0)
+        self.computer_choice = None
+        self.user_choice = None
+        self.frame = None
+        self.user_wins = 0
+        self.computer_wins = 0
+        self.num_rounds = num_rounds
 
     def display_text(self, text, position):
         font = cv2.FONT_HERSHEY_SIMPLEX
         colour = (0, 255, 255)
         cv2.putText(self.frame, text, position, font, 1, colour, 2, cv2.LINE_4)
 
+    def normalize_image(self, image_dimensions):
+        resized_frame = cv2.resize(self.frame, image_dimensions, interpolation=cv2.INTER_AREA)
+        image_np = np.array(resized_frame)
+        normalized_image = (image_np.astype(np.float32) / 127.0) - 1
+        return normalized_image
+
     def play(self):
 
         start_time = time.time()
         winner_found = False
         result_for_display = ""
+        image_dimensions = (224, 224)
 
         try:
             while True:
@@ -57,20 +69,11 @@ class RockPaperScissors:
                 if max(self.computer_wins, self.user_wins) >= self.num_rounds:
                     self.display_text("GAME OVER!", (50, 100))
                     self.display_text(f"You: {self.user_wins}", (50, 150))
-                    self.display_text(
-                        f"Computer: {self.computer_wins}", (50, 200))
+                    self.display_text(f"Computer: {self.computer_wins}", (50, 200))
 
                 else:
 
                     _, self.frame = self.cap.read()
-                    resized_frame = cv2.resize(
-                        self.frame, (224, 224), interpolation=cv2.INTER_AREA)
-                    image_np = np.array(resized_frame)
-                    normalized_image = (
-                        image_np.astype(np.float32) / 127.0) - 1
-                    self.data[0] = normalized_image
-                    prediction = self.model.predict(self.data)
-
                     self.display_text("Press Q to quit", (50, 50))
                     time_elapsed = time.time() - start_time
 
@@ -81,6 +84,8 @@ class RockPaperScissors:
 
                     elif 6 < time_elapsed < 10:
                         if not winner_found:
+                            normalized_image = self.normalize_image(image_dimensions)
+                            prediction = self.model.predict(normalized_image, image_dimensions)
                             self.user_choice = self.get_user_choice(prediction)
                             self.computer_choice = self.get_computer_choice()
                             result_for_display = self.get_winner()
@@ -111,9 +116,8 @@ class RockPaperScissors:
             print(err.__class__.__name__, err)
 
     def get_user_choice(self, prediction: np.array):
-        if np.max(prediction) >= 0.95:
-            gesture_detected = self.tags[np.argmax(prediction)]
-            return gesture_detected
+        if np.max(prediction) >= 0.5:
+            return self.model.classify(prediction)
         return "Nothing"
 
     def get_computer_choice(self):
@@ -127,19 +131,19 @@ class RockPaperScissors:
         '''Compare computer choice against user choice to determine
         who wins the game of rock, paper, scissors.'''
 
-        if self.computer_choice == self.user_choice:
+        if self.user_choice == "Nothing":
+            return "No-one wins"
+        elif self.computer_choice == self.user_choice:
             return "It is a tie!"
-        elif self.user_choice == "Nothing":
-            return "Null results"
         else:
             if self.computer_choice == "Rock":
-                user_wins = self.user_choice == "Paper"
+                user_wins_this_round = self.user_choice == "Paper"
             elif self.computer_choice == "Paper":
-                user_wins = self.user_choice == "Scissors"
+                user_wins_this_round = self.user_choice == "Scissors"
             else:
-                user_wins = self.user_choice == "Rock"
+                user_wins_this_round = self.user_choice == "Rock"
 
-            if user_wins:
+            if user_wins_this_round:
                 self.user_wins += 1
                 return "You won!"
             else:
