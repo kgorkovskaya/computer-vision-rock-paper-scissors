@@ -8,9 +8,9 @@ Set up GitHub repo.
 
 ## Milestone 2
 
-- Trained an image recognition model from Google Teachable Machine to classify hand gestures (input via webcam) as "Rock", "Paper", "Scissors", or "Nothing". 
+- Trained a computer vision model from Google Teachable Machine to classify hand gestures as "Rock", "Paper", "Scissors", or "Nothing". 
 - Downloaded model (keras_model.h5) and labels (labels.txt).
-- The model will be used to classify the user's hand gestures and play a game of Rock, Paper, Scissors against the computer.
+- The model will be used to classify the user's hand gestures (read via webcam) and play a game of Rock, Paper, Scissors against the computer.
 
 ## Milestone 3
 
@@ -26,3 +26,7 @@ Implemented functions for manual gameplay.
 - __get_user_choice()__ asks user to input "Rock", "Paper" or "Scissors" via the console. Input is stripped, capitalized, and validated via a while loop.
 - __get_winner()__ compares the output of get_user_choice() and get_user_choice() to determine who won the game, then prints a message to the console.
 - __play()__ executes the gameplay by calling get_user_choice(), get_computer_choice, and get_winner().
+
+## Milestoe 5
+
+- Created __get_prediction()__ function and ComputerVisionModel class to replace the hard-coded user guess with the output of the computer vision model. 
