@@ -8,7 +8,7 @@ import time
 
 class RockPaperScissors:
 
-    def __init__(self, labels_file: str = "labels.txt", model_file: str = "keras_model.h5"):
+    def __init__(self, num_rounds=3, labels_file="labels.txt", model_file="keras_model.h5"):
         self.model = None
         self.cap = None
         self.data = None
@@ -17,9 +17,12 @@ class RockPaperScissors:
         self.computer_choice = None
         self.user_choice = None
         self.frame = None
+        self.user_wins = 0
+        self.computer_wins = 0
+        self.num_rounds = num_rounds
 
     @staticmethod
-    def read_model_labels(labels_file: str) -> list:
+    def read_model_labels(labels_file):
         try:
             with open(labels_file, "r") as file:
                 labels = [line.strip().split()[1] for line in file.readlines()]
@@ -42,7 +45,7 @@ class RockPaperScissors:
         colour = (0, 255, 255)
         cv2.putText(self.frame, text, position, font, 1, colour, 2, cv2.LINE_4)
 
-    def play(self) -> None:
+    def play(self):
 
         start_time = time.time()
         winner_found = False
@@ -50,39 +53,49 @@ class RockPaperScissors:
 
         try:
             while True:
-                _, self.frame = self.cap.read()
-                resized_frame = cv2.resize(
-                    self.frame, (224, 224), interpolation=cv2.INTER_AREA)
-                image_np = np.array(resized_frame)
-                normalized_image = (image_np.astype(np.float32) / 127.0) - 1
-                self.data[0] = normalized_image
-                prediction = self.model.predict(self.data)
 
-                self.display_text("Press Q to quit", (50, 50))
-                time_elapsed = time.time() - start_time
+                if max(self.computer_wins, self.user_wins) >= self.num_rounds:
+                    self.display_text("GAME OVER!", (50, 100))
+                    self.display_text(f"You: {self.user_wins}", (50, 150))
+                    self.display_text(
+                        f"Computer: {self.computer_wins}", (50, 200))
 
-                if 1 <= time_elapsed <= 6:
-                    countdown_value = 6 - int(time_elapsed)
-                    message = f"Get ready to play in {countdown_value}"
-                    self.display_text(message, (50, 100))
+                else:
 
-                elif 6 < time_elapsed < 10:
-                    if not winner_found:
-                        self.user_choice = self.get_user_choice(prediction)
-                        self.computer_choice = self.get_computer_choice()
-                        result_for_display = self.get_winner()
-                        winner_found = True
-                    else:
-                        line_1 = f"Your choice: {self.user_choice}"
-                        self.display_text(line_1, (50, 100))
-                        line_2 = f"Computer choice: {self.computer_choice}"
-                        self.display_text(line_2, (50, 150))
-                        self.display_text(result_for_display, (50, 200))
+                    _, self.frame = self.cap.read()
+                    resized_frame = cv2.resize(
+                        self.frame, (224, 224), interpolation=cv2.INTER_AREA)
+                    image_np = np.array(resized_frame)
+                    normalized_image = (
+                        image_np.astype(np.float32) / 127.0) - 1
+                    self.data[0] = normalized_image
+                    prediction = self.model.predict(self.data)
 
-                elif time_elapsed >= 10:
-                    start_time = time.time()
-                    winner_found = False
-                    result_for_display = ""
+                    self.display_text("Press Q to quit", (50, 50))
+                    time_elapsed = time.time() - start_time
+
+                    if 1 <= time_elapsed <= 6:
+                        countdown_value = 6 - int(time_elapsed)
+                        message = f"Get ready to play in {countdown_value}"
+                        self.display_text(message, (50, 100))
+
+                    elif 6 < time_elapsed < 10:
+                        if not winner_found:
+                            self.user_choice = self.get_user_choice(prediction)
+                            self.computer_choice = self.get_computer_choice()
+                            result_for_display = self.get_winner()
+                            winner_found = True
+                        else:
+                            line_1 = f"Your choice: {self.user_choice}"
+                            self.display_text(line_1, (50, 100))
+                            line_2 = f"Computer choice: {self.computer_choice}"
+                            self.display_text(line_2, (50, 150))
+                            self.display_text(result_for_display, (50, 200))
+
+                    elif time_elapsed >= 10:
+                        start_time = time.time()
+                        winner_found = False
+                        result_for_display = ""
 
                 cv2.imshow('frame', self.frame)
                 if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -127,8 +140,11 @@ class RockPaperScissors:
                 user_wins = self.user_choice == "Rock"
 
             if user_wins:
+                self.user_wins += 1
                 return "You won!"
-            return "You lost"
+            else:
+                self.computer_wins += 1
+                return "You lost"
 
 
 if __name__ == '__main__':
