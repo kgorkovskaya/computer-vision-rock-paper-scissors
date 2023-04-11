@@ -27,6 +27,7 @@ Implemented functions for manual gameplay.
 - __get_winner()__ compares the output of get_user_choice() and get_user_choice() to determine who won the game, then prints a message to the console.
 - __play()__ executes the gameplay by calling get_user_choice(), get_computer_choice, and get_winner().
 
-## Milestoe 5
-
-- Created __get_prediction()__ function and ComputerVisionModel class to replace the hard-coded user guess with the output of the computer vision model. 
+## Milestone 5
+ 
+- Created RockPaperScissors class to execute gameplay.
+- Replaced the hard-coded user guess with the output of the computer vision model.
