@@ -37,18 +37,26 @@ Implemented functions for manual gameplay.
 ## Screenshots of gameplay
 
 Countdown timer
+
+
 ![](screenshots/rps_screenshot_01a.png)
 ![](screenshots/rps_screenshot_01b.png)
 ![](screenshots/rps_screenshot_01c.png)
 
 
 Game play: no user gesture detected
+
+
 ![](screenshots/rps_screenshot_02.png)
 
 
 Game play: user gesture detected
+
+
 ![](screenshots/rps_screenshot_03a.png)
 ![](screenshots/rps_screenshot_03b.png)
 
 End of game
+
+
 ![](screenshots/rps_screenshot_04.png)
