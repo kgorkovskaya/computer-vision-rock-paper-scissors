@@ -8,12 +8,14 @@ data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
 tags = ['Rock', 'Paper', 'Scissors', 'Nothing']
 while True:
     ret, frame = cap.read()
+    print(type(frame))
     resized_frame = cv2.resize(frame, (224, 224), interpolation=cv2.INTER_AREA)
     image_np = np.array(resized_frame)
     normalized_image = (image_np.astype(np.float32) /
                         127.0) - 1  # Normalize the image
     data[0] = normalized_image
     prediction = model.predict(data)
+    print(type(prediction))
     cv2.imshow('frame', frame)
     # Press q to close the window
     print(prediction, end=' ')
