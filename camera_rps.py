@@ -106,11 +106,11 @@ class RockPaperScissors:
         latest_game_outcome (str): string representation of latest game outcome
     '''
 
-    def __init__(self, num_wins=3, labels_file="labels.txt", model_file="keras_model.h5"):
+    def __init__(self, model, num_wins=3):
         '''See help(RockPaperScissors) for accurate signature.'''
 
         print('Starting Rock, Paper, Scissors game...')
-        self.model = KerasModel(labels_file, model_file)
+        self.model = model
         self.num_wins = num_wins
         self.tags = self.model.tags
         self.cap = cv2.VideoCapture(0)
@@ -199,7 +199,7 @@ class RockPaperScissors:
             None
         '''
         start_time = time.time()
-        winner_found = False
+        round_played = False
         image_dimensions = (224, 224)
 
         try:
@@ -223,19 +223,19 @@ class RockPaperScissors:
                         self.display_text(message, (50, 100))
 
                     elif 4 < time_elapsed < 7:
-                        if not winner_found:
+                        if not round_played:
                             normalized_image = self.normalize_image(image_dimensions)
                             prediction = self.model.predict(normalized_image, image_dimensions)
                             self.user_choice = self.get_user_choice(prediction)
                             self.computer_choice = self.get_computer_choice()
                             self.latest_game_outcome = self.get_winner()
-                            winner_found = True
+                            round_played = True
                         else:
                             self.display_latest_game_outcome()
 
                     elif time_elapsed >= 7:
                         start_time = time.time()
-                        winner_found = False
+                        round_played = False
 
                 cv2.imshow('frame', self.frame)
                 if cv2.waitKey(1) & 0xFF == ord('q'):
@@ -315,5 +315,6 @@ class RockPaperScissors:
 
 if __name__ == '__main__':
 
-    game = RockPaperScissors()
+    model = KerasModel()
+    game = RockPaperScissors(model)
     game.play()
