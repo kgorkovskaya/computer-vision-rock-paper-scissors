@@ -1,62 +1,80 @@
-# Computer Vision RPS
+# Computer Vision Rock-Paper-Scissors
 
-Rock-Paper-Scissors is a game in which each player simultaneously shows one of three hand signals representing rock, paper, or scissors. Rock beats scissors. Scissors beats paper. Paper beats rock. The player who shows the first option that beats the other player's option wins. This is an implementation of an interactive Rock-Paper-Scissors game, in which the user can play with the computer using the camera.
+## Table of Contents
 
-## Milestone 1
+1. [Description](#description)
 
-Set up GitHub repo.
+1. [Installation instructions](#installation-instructions)
 
-## Milestone 2
+1. [Usage instructions](#usage-instructions)
 
-- Trained a computer vision model from Google Teachable Machine to classify hand gestures as "Rock", "Paper", "Scissors", or "Nothing". Downloaded model (keras_model.h5) and labels (labels.txt).
-- The model will be used to classify the user's hand gestures (read via webcam) and play a game of Rock, Paper, Scissors against the computer.
+1. [File structure](#file-structure)
 
-## Milestone 3
+1. [License information](#license-information)
 
-Created a new Conda virtual environment. Installed the following dependencies:
-- opencv-python
-- tensorflow
-- ipykernel
+## Description
 
-## Milestone 4
+This project is the Computer Vision Rock-Paper-Scissors game for AiCore. Rock-Paper-Scissors is a game in which each player simultaneously shows one of three hand signals representing rock, paper, or scissors. Rock beats scissors. Scissors beats paper. Paper beats rock. The player who shows the first option that beats the other player's option wins. This is an implementation of an interactive Rock-Paper-Scissors game, in which the user can play with the computer using the camera.
 
-Implemented functions for manual gameplay.
-- __get_computer_choice()__ randomly selects an option from "Rock", "Paper", or "Scissors".
-- __get_user_choice()__ asks user to input "Rock", "Paper" or "Scissors" via the console. Input is stripped, capitalized, and validated via a while loop.
-- __get_winner()__ compares the output of get_user_choice() and get_user_choice() to determine who won the game, then prints a message to the console.
-- __play()__ executes the gameplay by calling get_user_choice(), get_computer_choice, and get_winner().
+NB: The game could have been improved if I had spent more time training the model. The current model is biased towards "Scissors" and often misclassifies hand gestures.
 
-## Milestone 5
+## Installation instructions
+
+- Train a computer vision model from Google Teachable machine to classify hand gestures as "Rock", "Paper", "Scissors", or "Nothing". Download the model (keras_model.h5) and labels (labels.txt). The model will be used to classify the player's hand gestures (read via webcam) and play a game of Rock, Paper, Scissors against the computer.
+- Install the following dependencies: 
+    - opencv-python
+    - tensorflow
+    - ipykernel
+
+
+## Usage instructions
  
-- Refactored the code and replaced the hard-coded user guess with output from the computer vision model.
-- Created RockPaperScissors class to read user input from webcam and execute gameplay, and KerasModel class to classify user input as "Rock", "Paper", "Scissors", or "Nothing". The game continues until one player (computer or user) has achieved a predetermined number of wins. A countdown is displayed between rounds. Outcome of each game is displayed on the video capture screen. White text with a black border is used to improve visibility.
-- The constructor of the RockPaperScissors class instantiates a KerasModel object, then passes images (captured via webcam) to the model for classification. The model returns an array of probabilities for each class. In the interests of reducing false positives, an image will only be classified as "Rock", "Paper", or "Scissors" if the probability is >= 50%.
-- Screenshots of gameplay are shown below. 
-- The game could have been improved if I'd spent more time training the model. The current model is biased towards "Scissors" and often misclassifies hand gestures.
+- Once all dependencies have been installed, run __camera_rps.py__. A window with gameplay instructions will pop up. 
+- Press "Q" to quit at any time.
+- Screenshots to illustrate gameplay are shown below. 
 
-## Screenshots of gameplay
+__Countdown timer__
+<br>
+<img src="screenshots/rps_screenshot_01a.png" width="600"/>
+<img src="screenshots/rps_screenshot_01b.png" width="600"/>
+<img src="screenshots/rps_screenshot_01c.png" width="600"/>
+<br>
 
-Countdown timer
+__No user gesture detected in current round__
+<br>
+<img src="screenshots/rps_screenshot_02.png" width="600"/>
+<br>
 
+__User gesture detected in current round__
+<br>
+<img src="screenshots/rps_screenshot_03a.png" width="600"/>
+<img src="screenshots/rps_screenshot_03b.png" width="600"/>
+<br>
 
-![](screenshots/rps_screenshot_01a.png)
-![](screenshots/rps_screenshot_01b.png)
-![](screenshots/rps_screenshot_01c.png)
-
-
-Game play: no user gesture detected
-
-
-![](screenshots/rps_screenshot_02.png)
-
-
-Game play: user gesture detected
-
-
-![](screenshots/rps_screenshot_03a.png)
-![](screenshots/rps_screenshot_03b.png)
-
-End of game
+__End of game__
+<br>
+<img src="screenshots/rps_screenshot_04.png" width="600"/>
 
 
-![](screenshots/rps_screenshot_04.png)
+## File structure
+
+```
+├── camera_rps.py
+├── keras_model.h5
+├── labels.txt
+├── LICENSE
+├── README.md
+├── requirements.txt
+└── screenshots
+    ├── rps_screenshot_01a.png
+    ├── rps_screenshot_01b.png
+    ├── rps_screenshot_01c.png
+    ├── rps_screenshot_02.png
+    ├── rps_screenshot_03a.png
+    ├── rps_screenshot_03b.png
+    └── rps_screenshot_04.png
+```
+
+## License information
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
